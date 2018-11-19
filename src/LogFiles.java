@@ -28,9 +28,18 @@ public class LogFiles {
 				while ((line = br.readLine()) != null) {
 					numOfLogs++;
 					String id = Util.getEntityIDFromLogString(line);
-					if(!logList.containsKey(id))
-						logList.put(id, new ArrayList<String>());
-					logList.get(line).add(line);
+					if (id != null) {
+						if (!logList.containsKey(id))
+							logList.put(id, new ArrayList<String>());
+						logList.get(id).add(line);
+					} else {
+						ArrayList<String> ids = Util.getEntityIDArrayFromLogString(line);
+						for (String i : ids) {
+							if (!logList.containsKey(i))
+								logList.put(i, new ArrayList<String>());
+							logList.get(i).add(line);
+						}
+					}
 				}
 			} catch (FileNotFoundException e) {
 				e.printStackTrace(System.out);

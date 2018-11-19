@@ -1,5 +1,4 @@
 import java.math.BigDecimal;
-import java.util.HashSet;
 
 public class LogRecord implements Comparable<LogRecord> {
 	public String line;
@@ -15,15 +14,25 @@ public class LogRecord implements Comparable<LogRecord> {
 	public BigDecimal BalanceUpdate;
 	public BigDecimal BalanceIncrement;
 
-	public LogRecord(String line) {
+	public LogRecord(String custid, String line) {
 		this.line = line;
 		String[] tokens = line.split(Util.RECORD_ATTRIBUTE_SEPERATOR);
 		tId = tokens[Util.LogRecordToken.TransactionID.Index];
 		start = Long.parseLong(tokens[Util.LogRecordToken.StartTime.Index]);
 		end = Long.parseLong(tokens[Util.LogRecordToken.StartTime.Index]);
 		tName = tokens[Util.LogRecordToken.Name.Index];
-		String entites = tokens[Util.LogRecordToken.Entities.Index];
-		String[] entitesTokens = entites.split(Util.ENTITY_ATTRIBUTE_SEPERATOR);
+		String entitesString = tokens[Util.LogRecordToken.Entities.Index];
+		String[] listOfEntities = entitesString.split(Util.ENTITY_SEPERATOR);
+		String entity = null;
+		for(String e : listOfEntities) {
+			String[] eTokens = e.split(Util.ENTITY_ATTRIBUTE_SEPERATOR);
+			String eId = eTokens[Util.EntityToken.EntityID.Index];
+			if(eId.equals(custid)) {
+				entity = e;
+				break;
+			}
+		}
+		String[] entitesTokens = entity.split(Util.ENTITY_ATTRIBUTE_SEPERATOR);
 		eName = entitesTokens[Util.EntityToken.EntityName.Index];
 		eId = entitesTokens[Util.EntityToken.EntityID.Index];
 		String propsString = entitesTokens[Util.EntityToken.EntityProperties.Index];

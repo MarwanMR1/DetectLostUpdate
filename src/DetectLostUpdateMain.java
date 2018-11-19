@@ -70,7 +70,7 @@ public class DetectLostUpdateMain {
 	}
 
 	private static HashSet<LogRecord> detectLostUpdate(String cid, ArrayList<String> logs) {
-		OrderedLogs orderedLogs = new OrderedLogs(logs);
+		OrderedLogs orderedLogs = new OrderedLogs(cid, logs);
 		if (!orderedLogs.get(orderedLogs.size() - 1).tName.equals(Util.ORDERSTATUS_ACTION)) {
 			System.err.println("ERROR: Last transaction for cutomer " + cid + " is not order status.");
 			System.exit(0);

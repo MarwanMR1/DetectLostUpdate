@@ -4,11 +4,11 @@ import java.util.Collections;
 public class OrderedLogs {
 	long longestTransaction;
 	private ArrayList<LogRecord> oLogs;
-	public OrderedLogs(ArrayList<String> logs) {
+	public OrderedLogs(String custid, ArrayList<String> logs) {
 		longestTransaction = -1;
 		oLogs = new ArrayList<LogRecord>();
 		for(String l : logs) {
-			LogRecord r = new LogRecord(l);
+			LogRecord r = new LogRecord(custid, l);
 			long duration = r.end - r.start;
 			if(duration > longestTransaction)
 				longestTransaction = duration;
@@ -18,6 +18,8 @@ public class OrderedLogs {
 	}
 	
 	public LogRecord get(int index) {
+		if(index < 0)
+			return null;
 		return oLogs.get(index);
 	}
 	
