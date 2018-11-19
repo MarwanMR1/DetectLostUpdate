@@ -1,6 +1,4 @@
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
@@ -22,7 +20,8 @@ public class DetectLostUpdateMain {
 					+ "Number of TPC-C warehouses, Logs directory, [number of threads]");
 			System.exit(0);
 		}
-		numOfWarehouses = Integer.parseInt(args[0]);
+//		numOfWarehouses = Integer.parseInt(args[0]);
+		numOfWarehouses = 10;
 		String logsDir = args[1];
 		numOfThreads = 1;
 		if (args.length >= 3) {
@@ -35,7 +34,7 @@ public class DetectLostUpdateMain {
 			}
 		}
 
-		System.out.println("Running Detect lost updates\nVersion 0.2");
+		System.out.println("Running Detect lost updates\nVersion 0.3");
 		System.out.println("Number of TPC-C warehouses: " + numOfWarehouses + ", Number of threads: " + numOfThreads
 				+ ", Log directory: " + logsDir);
 

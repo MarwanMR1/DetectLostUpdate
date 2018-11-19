@@ -8,15 +8,20 @@ public class DetectingThread implements Runnable {
 	public void run() {
 		String key = DetectLostUpdateMain.getKey();
 		while (key != null) {
-			HashSet<LogRecord> result = detectLostUpdate(key, DetectLostUpdateMain.experimentLogs.logs.get(key));
+			ArrayList<HashSet<LogRecord>> result = detectLostUpdate(key,
+					DetectLostUpdateMain.experimentLogs.logs.get(key));
 			if (!result.isEmpty()) {
-				System.out.println(key + ": " + result);
+				String toPrint = "";
+				for (HashSet<LogRecord> hs : result) {
+					toPrint += "#" + hs;
+				}
+				System.out.println(key  + toPrint);
 			}
 			key = DetectLostUpdateMain.getKey();
 		}
 	}
 
-	private HashSet<LogRecord> detectLostUpdate(String cid, ArrayList<String> logs) {
+	private ArrayList<HashSet<LogRecord>> detectLostUpdate(String cid, ArrayList<String> logs) {
 		OrderedLogs orderedLogs = new OrderedLogs(cid, logs);
 		if (!orderedLogs.get(orderedLogs.size() - 1).tName.equals(Util.ORDERSTATUS_ACTION)) {
 			System.err.println("ERROR: Last transaction for cutomer " + cid + " is not order status.");
@@ -27,22 +32,30 @@ public class DetectingThread implements Runnable {
 		BigDecimal bal = actualBal;
 		LogRecord ti = null, tj = orderedLogs.get(orderedLogs.size() - 1);
 		ti = findTi(orderedLogs, tj);
-		HashSet<LogRecord> T = new HashSet<>();
-		HashSet<LogRecord> TC = new HashSet<>();
+		ArrayList<HashSet<LogRecord>> T = new ArrayList<HashSet<LogRecord>>();
+//		HashSet<LogRecord> TC = new HashSet<>();
+//		HashSet<LogRecord> TD = new HashSet<>();
 
 		while (ti != null) {
 			BigDecimal bStart = new BigDecimal(ti.BalanceRead.toString());
-			TC.clear();
+			HashSet<LogRecord> TC = new HashSet<>();
+			HashSet<LogRecord> TD = new HashSet<>();
 			int indexOfTj = orderedLogs.indexOf(tj);
 			int indexOfTi = orderedLogs.indexOf(ti);
 			for (int p = indexOfTi; p < indexOfTj; p++) {
 				LogRecord tp = orderedLogs.get(p);
+				if (tp.tName.equals(Util.ORDERSTATUS_ACTION)) {
+					continue;
+				}
 				for (int q = p + 1; q < indexOfTj; q++) {
 					LogRecord tq = orderedLogs.get(q);
+					if (tq.tName.equals(Util.ORDERSTATUS_ACTION)) {
+						continue;
+					}
 					if (tp.tName.equals(Util.PAYMENT_ACTION) && tp.overlap(tq)
 							&& tp.BalanceRead.compareTo(tq.BalanceRead) == 0) {
-						T.add(tp);
-						T.add(tq);
+						TD.add(tp);
+						TD.add(tq);
 					}
 					if ((!tp.tName.equals(Util.ORDERSTATUS_ACTION)) && tp.overlap(tq)
 							&& (!tq.tName.equals(Util.ORDERSTATUS_ACTION))) {
@@ -53,7 +66,10 @@ public class DetectingThread implements Runnable {
 				bStart = bStart.add(tp.BalanceIncrement);
 			}
 			if (bStart.compareTo(bal) != 0) {
-				T.addAll(TC);
+				TD.addAll(TC);
+			}
+			if (!TD.isEmpty()) {
+				T.add(TD);
 			}
 			bal = ti.BalanceRead;
 			tj = ti;
