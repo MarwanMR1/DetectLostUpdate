@@ -19,7 +19,7 @@ public class LogRecord implements Comparable<LogRecord> {
 		String[] tokens = line.split(Util.RECORD_ATTRIBUTE_SEPERATOR);
 		tId = tokens[Util.LogRecordToken.TransactionID.Index];
 		start = Long.parseLong(tokens[Util.LogRecordToken.StartTime.Index]);
-		end = Long.parseLong(tokens[Util.LogRecordToken.StartTime.Index]);
+		end = Long.parseLong(tokens[Util.LogRecordToken.EndTime.Index]);
 		tName = tokens[Util.LogRecordToken.Name.Index];
 		String entitesString = tokens[Util.LogRecordToken.Entities.Index];
 		String[] listOfEntities = entitesString.split(Util.ENTITY_SEPERATOR);
